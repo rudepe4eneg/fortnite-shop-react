@@ -3,11 +3,15 @@ import { API_KEY, API_URL } from '../config';
 import { Preloader } from './Preloader';
 import { ItemList } from './ItemsList';
 import { Cart } from './Cart';
+import { BasketList } from './BasketList';
+import { Alert } from './Alert';
 
 export function Shop() {
     const [items, setItems] = useState([]);
     const [loading, setLoading] = useState(true);
     const [order, setOrder] = useState([]);
+    const [isBasketShow, setBasketShow] = useState(false);
+    const [alertName, setAlertName] = useState('');
 
     const addToBasket = (item) => {
         const itemIndex = order.findIndex(
@@ -28,11 +32,55 @@ export function Shop() {
                         quantity: orderItem.quantity + 1,
                     };
                 } else {
-                    return item;
+                    return orderItem;
                 }
             });
             setOrder(newOrder);
         }
+        setAlertName(item.displayName);
+    };
+
+    const removeFromBasket = (itemId) => {
+        const newOrder = order.filter((el) => el.mainId !== itemId);
+        setOrder(newOrder);
+    };
+
+    const handleBasketShow = () => {
+        setBasketShow(!isBasketShow);
+    };
+
+    const incQuantity = (itemId) => {
+        const newOrder = order.map((el) => {
+            if (el.mainId === itemId) {
+                const newQuantity = el.quantity + 1;
+                return {
+                    ...el,
+                    quantity: newQuantity,
+                };
+            } else {
+                return el;
+            }
+        });
+        setOrder(newOrder);
+    };
+
+    const decQuantity = (itemId) => {
+        const newOrder = order.map((el) => {
+            if (el.mainId === itemId) {
+                const newQuantity = el.quantity - 1;
+                return {
+                    ...el,
+                    quantity: newQuantity >= 0 ? newQuantity : 0,
+                };
+            } else {
+                return el;
+            }
+        });
+        setOrder(newOrder);
+    };
+
+    const closeAlert = () => {
+        setAlertName('');
     };
 
     useEffect(function getItems() {
@@ -50,13 +98,31 @@ export function Shop() {
 
     return (
         <main className='container content'>
-            <Cart quantity={order.length} />
+            <Cart
+                quantity={order.length}
+                handleBasketShow={handleBasketShow}
+            />
             {loading ? (
                 <Preloader />
             ) : (
                 <ItemList
                     items={items}
                     addToBasket={addToBasket}
+                />
+            )}
+            {isBasketShow && (
+                <BasketList
+                    order={order}
+                    handleBasketShow={handleBasketShow}
+                    removeFromBasket={removeFromBasket}
+                    incQuantity={incQuantity}
+                    decQuantity={decQuantity}
+                />
+            )}
+            {alertName && (
+                <Alert
+                    name={alertName}
+                    closeAlert={closeAlert}
                 />
             )}
         </main>

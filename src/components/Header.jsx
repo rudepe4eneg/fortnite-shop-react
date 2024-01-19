@@ -1,9 +1,9 @@
 export function Header() {
     return (
-        <nav className='light-blue'>
+        <nav className='teal lighten-1'>
             <div className='nav-wrapper'>
                 <a
-                    href='#'
+                    href='!#'
                     className='brand-logo'>
                     React Shop
                 </a>
