@@ -1,12 +1,16 @@
-export function GoodsItem(props) {
+import { useContext } from 'react';
+import { ShopContext } from '../context';
+
+export function Item(props) {
     const {
         mainId,
         displayName,
         displayDescription,
         price: { regularPrice },
         displayAssets: [{ full_background }],
-        addToBasket = Function.prototype,
     } = props;
+
+    const { addToBasket } = useContext(ShopContext);
 
     return (
         <div
